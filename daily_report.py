@@ -6,13 +6,16 @@ from email.mime.text import MIMEText
 from email.header import Header
 
 # ==================== 配置区 ====================
-NEWS_API_KEY = "53374cc9663b416f873a41c8f5c40ead"
-AI_API_KEY = "sk-24e4d894e6a749e8a20a79ad95374e46"
+# 这里保留了 os.getenv，这样你在 GitHub Secrets 里设置变量后云端也能读到
+NEWS_API_KEY = os.getenv("NEWS_KEY") or "53374cc9663b416f873a41c8f5c40ead"
+AI_API_KEY = os.getenv("AI_KEY") or "sk-24e4d894e6a749e8a20a79ad95374e46"
 
-# 强制使用你新给的 QQ 邮箱授权码
+# 你的最新 QQ 邮箱配置
 SENDER_EMAIL = "2586753019@qq.com"
 RECEIVER_EMAIL = "2586753019@qq.com"
-MAIL_AUTH = "zkanwqrhsqpoeaib"
+MAIL_AUTH = os.getenv("MAIL_AUTH") or "zkanwqrhsqpoeaib"
+
+
 # ===============================================
 
 def fetch_and_analyze():
@@ -37,6 +40,7 @@ def fetch_and_analyze():
     except Exception as e:
         return f"获取或分析失败: {e}"
 
+
 def send_email(content):
     print("第二步：正在尝试发送邮件...")
     message = MIMEText(content, 'plain', 'utf-8')
@@ -45,15 +49,20 @@ def send_email(content):
     message['Subject'] = Header("今日 AI 智库自动分析报告", 'utf-8')
 
     try:
-        # QQ 邮箱在服务器上使用 587 端口最稳定
+        # 为了应对 GitHub 云端拦截，增加显式的握手流程
         server = smtplib.SMTP("smtp.qq.com", 587)
-        server.starttls()  # 必须加上这一行
+        server.set_debuglevel(1)  # 开启调试模式，方便在 GitHub Actions 日志里看细节
+        server.ehlo()  # 向服务器表明身份
+        server.starttls()  # 启动 TLS 加密
+        server.ehlo()  # 加密后再握手一次
+
         server.login(SENDER_EMAIL, MAIL_AUTH)
         server.sendmail(SENDER_EMAIL, [RECEIVER_EMAIL], message.as_string())
         server.quit()
         print("✅ 报告已成功发送至 QQ 邮箱！")
     except Exception as e:
         print(f"❌ 邮件发送失败: {e}")
+
 
 if __name__ == "__main__":
     report_result = fetch_and_analyze()
