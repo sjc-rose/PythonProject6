@@ -62,4 +62,7 @@ def send_email(content):
         print("✅ 报告已成功发送至邮箱！")
     except Exception as e:
         print(f"❌ 邮件发送失败: {e}")
-    send_email(report)
+
+# 确保这两行在文件的最底部，且前面没有空格
+if __name__ == "__main__":
+    fetch_and_analyze()
