@@ -63,6 +63,7 @@ def send_email(content):
     except Exception as e:
         print(f"❌ 邮件发送失败: {e}")
 
+
 # 确保这两行在文件的最底部，且前面没有空格
 if __name__ == "__main__":
-    fetch_and_analyze()
+    fetch_and_analyze()  # 注意前面的空格！
