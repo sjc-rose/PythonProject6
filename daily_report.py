@@ -51,17 +51,16 @@ def send_email(content):
     message['Subject'] = Header("今日 AI 智库自动分析报告", 'utf-8')
 
     try:
-        # QQ 邮箱服务器是 smtp.qq.com
-        server = smtplib.SMTP_SSL("smtp.qq.com", 465)
+        # --- 这里是修改后的部分 ---
+        # 改用 587 端口并启用 TLS 加密，这种方式在 GitHub Actions 环境下最稳定
+        server = smtplib.SMTP("smtp.qq.com", 587)
+        server.starttls()
+        # -----------------------
+
         server.login(SENDER_EMAIL, MAIL_AUTH)
         server.sendmail(SENDER_EMAIL, [RECEIVER_EMAIL], message.as_string())
         server.quit()
         print("✅ 报告已成功发送至邮箱！")
     except Exception as e:
         print(f"❌ 邮件发送失败: {e}")
-
-
-if __name__ == "__main__":
-    print("开始执行每日任务...")
-    report = fetch_and_analyze()
     send_email(report)
