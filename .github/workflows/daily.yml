@@ -2,9 +2,9 @@ name: Daily Report
 
 on:
   schedule:
-    # 定时任务：UTC 00:00 = 北京时间 08:00
-    - cron: '0 0 * * *'
-  workflow_dispatch: # 允许手动点击按钮测试
+    # 设定在 UTC 03:05，即首尔/北京时间 12:05
+    - cron: '5 3 * * *'
+  workflow_dispatch: # 保持开启，方便你手动测试
 
 jobs:
   run-daily:
@@ -22,7 +22,6 @@ jobs:
 
       - name: Run analysis
         env:
-          # 将 GitHub Secrets 映射给 Python 环境变量
           NEWS_KEY: ${{ secrets.NEWS_KEY }}
           AI_KEY: ${{ secrets.AI_KEY }}
           FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
